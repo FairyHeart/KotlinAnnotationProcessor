@@ -1,0 +1,4 @@
+rootProject.name='KotlinAnnotationProcessorTest'
+include ':app'
+include ':lib_annotaion'
+include ':lib_processor'
