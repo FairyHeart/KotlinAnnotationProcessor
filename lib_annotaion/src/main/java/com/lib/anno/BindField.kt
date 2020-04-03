@@ -1,9 +1,5 @@
 package com.lib.anno
 
 @Retention(AnnotationRetention.SOURCE)
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
-)
-annotation class BindField(val viewIds: Array<String>, val viewName: String)
+@Target(AnnotationTarget.FILE, AnnotationTarget.PROPERTY)
+annotation class BindField(val value: Int = 0)

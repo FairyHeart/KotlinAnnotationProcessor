@@ -26,26 +26,26 @@ class BindFieldProcessor : AbstractProcessor() {
         annotations: MutableSet<out TypeElement>?,
         roundEnv: RoundEnvironment?
     ): Boolean {
-        roundEnv?.getElementsAnnotatedWith(BindField::class.java)?.forEach { methodElement ->
-            if (methodElement.kind != ElementKind.METHOD) {
-                processingEnv.messager.printMessage(
-                    Diagnostic.Kind.ERROR,
-                    "Can only be applied to functions,  element: $methodElement "
-                )
-                return false
-            }
-            (methodElement as ExecutableElement).parameters.forEach { variableElement ->
-                generateNewMethod(
-                    methodElement,
-                    variableElement,
-                    processingEnv.elementUtils.getPackageOf(methodElement).toString()
-                )
+        roundEnv?.getElementsAnnotatedWith(BindField::class.java)?.forEach { element ->
+            when (element) {
+                is TypeElement -> {
+
+                }
+                is ExecutableElement -> {
+
+                }
+                is VariableElement -> {
+                    val bindView = element.getAnnotation(BindField::class.java)
+                    if (bindView != null) {
+                        val id = bindView.value
+                    }
+                }
             }
         }
         return false
     }
 
-    private fun generateNewMethod(
+    /*private fun generateNewMethod(
         method: ExecutableElement,
         variable: VariableElement,
         packageOfMethod: String
@@ -87,7 +87,7 @@ class BindFieldProcessor : AbstractProcessor() {
         file.mkdir()
         FileSpec.builder(packageOfMethod, "BindFieldsGenerated").addFunction(funcBuilder.build())
             .build().writeTo(file)
-    }
+    }*/
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf(BindField::class.java.canonicalName)

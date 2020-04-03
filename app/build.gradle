@@ -23,14 +23,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+//
+//    sourceSets {
+//        main {
+//            java {
+//                srcDir "${buildDir.absolutePath}/generated/source/kaptKotlin/"
+//            }
+//        }
+//    }
 
-    sourceSets {
-        main {
-            java {
-                srcDir "${buildDir.absolutePath}/generated/source/kaptKotlin/"
-            }
-        }
-    }
 }
 
 dependencies {
@@ -43,7 +44,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation project(':lib_annotaion')
-    kapt project(':lib_processor')
+//    implementation project(':lib_annotaion')
+//    kapt project(':lib_processor')
+    implementation project(':lib_annotaion_java')
+    kapt project(':lib_processor_java')
 
 }
