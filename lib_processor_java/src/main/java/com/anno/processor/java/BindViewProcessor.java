@@ -16,6 +16,8 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -29,6 +31,8 @@ import javax.lang.model.util.Types;
  * @author Administrator
  */
 @AutoService(Process.class)
+@SupportedAnnotationTypes({"com.anno.processor.java.BindView"})
+@SupportedSourceVersion(value = SourceVersion.RELEASE_8)
 public class BindViewProcessor extends AbstractProcessor {
 
     private Elements elementUtils;
@@ -68,24 +72,34 @@ public class BindViewProcessor extends AbstractProcessor {
 
     /**
      * 所支持的注解，有多少个就添加多少个
+     * @SupportedAnnotationTypes注解代替
      *
      * @return
      */
-    @Override
-    public Set<String> getSupportedAnnotationTypes() {
-        Set<String> types = new LinkedHashSet<>();
-        types.add(BindView.class.getCanonicalName());
-        return types;
-    }
+//    @Override
+//    public Set<String> getSupportedAnnotationTypes() {
+//        Set<String> types = new LinkedHashSet<>();
+//        types.add(BindView.class.getCanonicalName());
+//        return types;
+//    }
 
     /**
      * 支持的源码版本
      *
      * @return
+     * @SupportedSourceVersion注解代替
+     */
+//    @Override
+//    public SourceVersion getSupportedSourceVersion() {
+//        return SourceVersion.latest();
+//    }
+
+    /**
+     * 传入的参数
      */
     @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latest();
+    public Set<String> getSupportedOptions() {
+        return super.getSupportedOptions();
     }
 
     /**
