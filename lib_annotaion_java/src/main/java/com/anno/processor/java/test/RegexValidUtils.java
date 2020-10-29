@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author: GuaZi.
+ * @author: Fairy.
  * @date : 2020-04-03.
  */
 public class RegexValidUtils {

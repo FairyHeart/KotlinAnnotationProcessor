@@ -1,7 +1,7 @@
 package com.anno.processor.java.test;
 
 /**
- * @author: GuaZi.
+ * @author: Fairy.
  * @date : 2020-04-03.
  */
 public class User {

@@ -1,8 +1,5 @@
 package com.test.kotlin.poet
 
-import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
-
-@KotlinPoetMetadataPreview
 fun main(vararg args: String) {
 
     testHelloWorld()

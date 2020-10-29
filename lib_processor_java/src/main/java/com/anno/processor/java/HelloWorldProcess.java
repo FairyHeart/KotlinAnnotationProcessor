@@ -6,76 +6,96 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.sql.Types;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
 
-/**
- * @author: GuaZi.
- * @date : 2020-04-03.
- */
 @AutoService(Processor.class)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)//支持的源码版本
+//@SupportedAnnotationTypes("com.anno.processor.java.HelloWorldAnn")//支持的注解
 public class HelloWorldProcess extends AbstractProcessor {
 
     private Filer filer;
+    private Messager messager;
+    private Elements elements;
 
+    /**
+     * 初始化必要的数据
+     */
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
-        filer = processingEnvironment.getFiler();
+        this.filer = processingEnvironment.getFiler();//返回用于创建新的源，类或辅助文件的文件管理器
+        this.messager = processingEnvironment.getMessager();//打印信息
+        this.elements = processingEnvironment.getElementUtils();//返回一些用于操作元素的实用方法的实现
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> typeElements, RoundEnvironment roundEnvironment) {
-        for (TypeElement typeElement : typeElements) {
-            if (typeElement.getQualifiedName().toString().equals(HelloWorld.class.getCanonicalName())) {
-                // 创建main方法
-                MethodSpec main = MethodSpec.methodBuilder("main")
-                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                        .returns(void.class)
-                        .addParameter(String[].class, "args")
-                        .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
-                        .build();
-                // 创建HelloWorld类
-                TypeSpec helloWorld = TypeSpec.classBuilder("HelloWorld")
-                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                        .addMethod(main)
-                        .build();
-
-                try {
-                    // 生成 com.example.HelloWorld.java
-                    JavaFile javaFile = JavaFile.builder("com.anno.processor.test", helloWorld)
-                            .addFileComment(" This codes are generated automatically. Do not modify!")
+        if (typeElements != null && !typeElements.isEmpty()) {
+            for (TypeElement typeElement : typeElements) {
+                messager.printMessage(Diagnostic.Kind.WARNING,typeElement.getQualifiedName().toString());
+                if (typeElement.getQualifiedName().toString().equals(HelloWorldAnn.class.getCanonicalName())) {
+                    // 创建main方法
+                    MethodSpec main = MethodSpec.methodBuilder("main")
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                            .returns(void.class)
+                            .addParameter(String[].class, "args")
+                            .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
                             .build();
-                    //　生成文件
-                    javaFile.writeTo(filer);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    // 创建HelloWorld类
+                    String className = typeElement.getSimpleName() + "$Processor";//新生成类名
+                    TypeSpec helloWorld = TypeSpec.classBuilder(className)
+                            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                            .addMethod(main)
+                            .build();
+
+                    try {
+                        // 生成 com.example.HelloWorld.java
+                        String pageName = typeElement.getClass().getPackage().getName();//新生成的类的包名
+                        messager.printMessage(Diagnostic.Kind.WARNING,pageName);
+                        JavaFile javaFile = JavaFile.builder("com.test", helloWorld)
+                                .addFileComment(" This codes are generated automatically. Do not modify!")
+                                .build();
+                        //　生成文件
+                        javaFile.writeTo(filer);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
+    /**
+     * 所支持的注解，有多少个就添加多少个
+     */
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotations = new LinkedHashSet<>();
-        annotations.add(HelloWorld.class.getCanonicalName());
+        annotations.add(HelloWorldAnn.class.getCanonicalName());
         return annotations;
-
     }
 
+    /**
+     * 传入的参数
+     */
     @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latestSupported();
+    public Set<String> getSupportedOptions() {
+        return super.getSupportedOptions();
     }
 }

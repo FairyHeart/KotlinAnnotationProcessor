@@ -164,6 +164,7 @@ fun testFun2() {
         .writeTo(System.out)
 }
 
+
 /*
 默认函数参数
 fun add(a: Int, b: Int = 0) {
@@ -180,7 +181,7 @@ fun testFunDefault() {
                 .defaultValue("%L", 0)
                 .build()
         )
-//        .addStatement("print(\"a + b = ${a + b}\")")
+        .addStatement("print(\"a + b = +\" %L.plus(%L))", "a", "b")
         .build()
 
     FileSpec.builder("com.test", "Test")
