@@ -17,6 +17,7 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -44,10 +45,10 @@ public class HelloWorldProcess extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> typeElements, RoundEnvironment roundEnvironment) {
-        if (typeElements != null && !typeElements.isEmpty()) {
-            for (TypeElement typeElement : typeElements) {
-                messager.printMessage(Diagnostic.Kind.WARNING,typeElement.getQualifiedName().toString());
-                if (typeElement.getQualifiedName().toString().equals(HelloWorldAnn.class.getCanonicalName())) {
+        Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(HelloWorldAnn.class);
+        if (elements != null) {
+            for (Element element : elements) {
+                if (element instanceof TypeElement) {
                     // 创建main方法
                     MethodSpec main = MethodSpec.methodBuilder("main")
                             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -56,7 +57,7 @@ public class HelloWorldProcess extends AbstractProcessor {
                             .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
                             .build();
                     // 创建HelloWorld类
-                    String className = typeElement.getSimpleName() + "$Processor";//新生成类名
+                    String className = element.getSimpleName() + "$Processor";//新生成类名
                     TypeSpec helloWorld = TypeSpec.classBuilder(className)
                             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                             .addMethod(main)
@@ -64,9 +65,9 @@ public class HelloWorldProcess extends AbstractProcessor {
 
                     try {
                         // 生成 com.example.HelloWorld.java
-                        String pageName = typeElement.getClass().getPackage().getName();//新生成的类的包名
-                        messager.printMessage(Diagnostic.Kind.WARNING,pageName);
-                        JavaFile javaFile = JavaFile.builder("com.test", helloWorld)
+                        String pageName = element.getEnclosingElement().toString();//新生成的类的包名
+                        messager.printMessage(Diagnostic.Kind.WARNING, pageName);
+                        JavaFile javaFile = JavaFile.builder(pageName, helloWorld)
                                 .addFileComment(" This codes are generated automatically. Do not modify!")
                                 .build();
                         //　生成文件
@@ -76,7 +77,6 @@ public class HelloWorldProcess extends AbstractProcessor {
                     }
                 }
             }
-            return true;
         }
         return false;
     }
